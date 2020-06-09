@@ -66,31 +66,18 @@ $ns duplex-link-op $n3 $n4 orient right-up
 $ns duplex-link-op $n3 $n5 orient right-down
 
 
-# $n0 set Y_ -160
-# $n1 set Y_ -160
-# $n2 set Y_ -100
-# $n3 set Y_ 100
-# $n4 set Y_ 160
-# $n5 set Y_ 160
-
-
-# $n0 set X_ 60
-# $n1 set X_ -60
-# $n2 set X_ 0
-# $n3 set X_ 0
-# $n4 set X_ 60
-# $n5 set X_ -60
-
 #Monitor the queue for link (n2-n3). (for NAM)
 $ns duplex-link-op $n2 $n3 queuePos 0.5
 
 #Setup a TCP connection
 set tcp0 [new Agent/TCP]
 $tcp0 set fid_ 1
+$tcp0 set ttl_ 64
 $ns attach-agent $n0 $tcp0
 
 set tcp1 [new Agent/TCP]
 $tcp1 set fid_ 2
+$tcp1 set ttl_ 64
 $ns attach-agent $n1 $tcp1
 
 set sink4 [new Agent/TCPSink]
