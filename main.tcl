@@ -1,5 +1,6 @@
 
 # http://www.mathcs.emory.edu/~cheung/Courses/558/Syllabus/04-NS/ns.html
+# https://www.absingh.com/ns2/
 
 
 #Create a simulator object
@@ -48,10 +49,10 @@ set n5 [$ns node]
 # $ns duplex-link $n2 $n3 1.7Mb 20ms DropTail
 
 $ns duplex-link $n0 $n2 100Mb 5ms DropTail
-$ns duplex-link $n1 $n2 100Mb [randomGenerator 20]ms DropTail
+$ns duplex-link $n1 $n2 100Mb 5ms DropTail
 $ns duplex-link $n2 $n3 0.1Mb 1ms DropTail
 $ns duplex-link $n3 $n4 100Mb 5ms DropTail
-$ns duplex-link $n3 $n5 100Mb [randomGenerator 20]ms DropTail
+$ns duplex-link $n3 $n5 100Mb 5ms DropTail
 
 #Set Queue Size of link (n2-n3) to 10
 $ns queue-limit $n2 $n3 10
@@ -63,6 +64,22 @@ $ns duplex-link-op $n1 $n2 orient right-up
 $ns duplex-link-op $n2 $n3 orient right
 $ns duplex-link-op $n3 $n4 orient right-up
 $ns duplex-link-op $n3 $n5 orient right-down
+
+
+# $n0 set Y_ -160
+# $n1 set Y_ -160
+# $n2 set Y_ -100
+# $n3 set Y_ 100
+# $n4 set Y_ 160
+# $n5 set Y_ 160
+
+
+# $n0 set X_ 60
+# $n1 set X_ -60
+# $n2 set X_ 0
+# $n3 set X_ 0
+# $n4 set X_ 60
+# $n5 set X_ -60
 
 #Monitor the queue for link (n2-n3). (for NAM)
 $ns duplex-link-op $n2 $n3 queuePos 0.5
@@ -95,14 +112,14 @@ set cbr1 [new Application/Traffic/CBR]
 $cbr1 attach-agent $tcp0
 $cbr1 set type_ CBR
 $cbr1 set packet_size_ 1000
-# $cbr1 set rate_ 1mb
+$cbr1 set rate_ 1mb
 
 
 set cbr2 [new Application/Traffic/CBR]
 $cbr2 attach-agent $tcp1
 $cbr2 set type_ CBR
 $cbr2 set packet_size_ 1000
-# $cbr1 set rate_ 1mb
+$cbr2 set rate_ 1mb
 
 
 #Setup a CBR over UDP connection
@@ -115,7 +132,7 @@ $cbr2 set packet_size_ 1000
 
 #Schedule events for the CBR and FTP agents
 $ns at 0.1 "$cbr1 start"
-$ns at 1.0 "$cbr2 start"
+$ns at 0.1 "$cbr2 start"
 $ns at 4.0 "$cbr1 stop"
 $ns at 4.0 "$cbr2 stop"
 
