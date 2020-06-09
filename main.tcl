@@ -34,4 +34,13 @@ set n4 [$ns node]
 set n5 [$ns node]
 
 
+$ns duplex-link $n0 $n2 100Mb 5ms DropTail
+$ns duplex-link $n1 $n2 100Mb [randomGenerator 20]ms DropTail
+$ns duplex-link $n2 $n3 100Kb 1ms DropTail
+$ns duplex-link $n3 $n4 100Mb 5ms DropTail
+$ns duplex-link $n3 $n5 100Mb [randomGenerator 20]ms DropTail
+
+
+
+$ns at 5.0 "finish"
 
