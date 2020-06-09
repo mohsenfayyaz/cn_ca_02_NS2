@@ -36,9 +36,25 @@ set n5 [$ns node]
 
 $ns duplex-link $n0 $n2 100Mb 5ms DropTail
 $ns duplex-link $n1 $n2 100Mb [randomGenerator 20]ms DropTail
-$ns duplex-link $n2 $n3 100Kb 1ms DropTail
+$ns duplex-link $n2 $n3 0.1Mb 1ms DropTail
 $ns duplex-link $n3 $n4 100Mb 5ms DropTail
 $ns duplex-link $n3 $n5 100Mb [randomGenerator 20]ms DropTail
+
+
+#Set Queue Size of link (n2-n3) to 10
+$ns queue-limit $n2 $n3 10
+$ns queue-limit $n3 $n2 10
+
+
+$ns duplex-link-op $n0 $n2 orient right-down
+$ns duplex-link-op $n1 $n2 orient right-up
+$ns duplex-link-op $n2 $n3 orient right
+$ns duplex-link-op $n3 $n4 orient right-up
+$ns duplex-link-op $n3 $n5 orient right-down
+
+#Monitor the queue for link (n2-n3). (for NAM)
+$ns duplex-link-op $n2 $n3 queuePos 0.5
+
 
 
 
