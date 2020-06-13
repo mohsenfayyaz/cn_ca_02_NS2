@@ -1,6 +1,7 @@
 
 # http://www.mathcs.emory.edu/~cheung/Courses/558/Syllabus/04-NS/ns.html
 # https://www.absingh.com/ns2/
+# https://ns2blogger.blogspot.com/p/the-file-written-by-application-or-by.html
 
 
 #Create a simulator object
