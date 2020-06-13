@@ -13,22 +13,39 @@ $ns color 2 Red
 
 #Open the NAM trace file
 set nf [open out.nam w]
+set cwnd_outfile [open cwnd.out w]
 $ns namtrace-all $nf
 
 #Define a 'finish' procedure
 proc finish {} {
-    global ns nf
+    global ns nf cwnd_outfile
     $ns flush-trace
     #Close the NAM trace file
     close $nf
+    close $cwnd_outfile
     #Execute NAM on the trace file
-    exec nam out.nam &
+    # exec nam out.nam &
     exit 0
 }
 
 
 proc randomGenerator {max} {
     return [expr {int(rand()*$max) + 5}]
+}
+
+
+
+proc plotWindow {tcp0 tcp1 outfile} {
+    global ns
+
+    set now [$ns now]
+    set cwnd0 [$tcp0 set cwnd_]
+    set cwnd1 [$tcp1 set cwnd_]
+
+#  Print TIME CWND   for  gnuplot to plot progressing on CWND   
+    puts  $outfile  "$now $cwnd0 $cwnd1"
+
+    $ns at [expr $now+0.1] "plotWindow $tcp0 $tcp1 $outfile"
 }
 
 #Create four nodes
@@ -71,12 +88,12 @@ $ns duplex-link-op $n3 $n5 orient right-down
 $ns duplex-link-op $n2 $n3 queuePos 0.5
 
 #Setup a TCP connection
-set tcp0 [new Agent/TCP]
+set tcp0 [new Agent/TCP/Reno]
 $tcp0 set fid_ 1
 $tcp0 set ttl_ 64
 $ns attach-agent $n0 $tcp0
 
-set tcp1 [new Agent/TCP]
+set tcp1 [new Agent/TCP/Reno]
 $tcp1 set fid_ 2
 $tcp1 set ttl_ 64
 $ns attach-agent $n1 $tcp1
@@ -123,6 +140,8 @@ $ns at 0.1 "$cbr1 start"
 $ns at 0.1 "$cbr2 start"
 $ns at 4.0 "$cbr1 stop"
 $ns at 4.0 "$cbr2 stop"
+
+$ns  at  0.0  "plotWindow $tcp0 $tcp1 $cwnd_outfile" 
 
 # #Detach tcp and sink agents (not really necessary)
 # $ns at 4.5 "$ns detach-agent $n0 $tcp ; $ns detach-agent $n3 $sink"
