@@ -85,8 +85,8 @@ set n5 [$ns node]
 # $ns duplex-link $n2 $n3 1.7Mb 20ms DropTail
 set randomDelay0 [randomGenerator 5 25]
 set randomDelay1 [randomGenerator 5 25]
-puts "3->5 variable delay: $randomDelay0"
-puts "1->2 variable delay: $randomDelay1"
+puts "1->2 variable delay: $randomDelay0"
+puts "3->5 variable delay: $randomDelay1"
 $ns duplex-link $n0 $n2 100Mb 5ms DropTail
 $ns duplex-link $n1 $n2 100Mb [expr $randomDelay0]ms DropTail
 $ns duplex-link $n2 $n3 0.1Mb 1ms DropTail
