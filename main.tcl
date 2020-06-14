@@ -33,12 +33,10 @@ proc finish {} {
     exit 0
 }
 
-
-proc randomGenerator {max} {
-    return [expr {int(rand()*$max) + 5}]
+# Random number between min and max including them
+proc randomGenerator {min max} {
+    return [expr {int(rand()*[expr $max - $min + 1] ) + $min}]
 }
-
-
 
 proc cwndPlotWindow {tcp0 tcp1 outfile} {
     global ns
@@ -85,12 +83,15 @@ set n5 [$ns node]
 # $ns duplex-link $n0 $n2 2Mb 10ms DropTail
 # $ns duplex-link $n1 $n2 2Mb 10ms DropTail
 # $ns duplex-link $n2 $n3 1.7Mb 20ms DropTail
-
+set randomDelay0 [randomGenerator 5 25]
+set randomDelay1 [randomGenerator 5 25]
+puts "3->5 variable delay: $randomDelay0"
+puts "1->2 variable delay: $randomDelay1"
 $ns duplex-link $n0 $n2 100Mb 5ms DropTail
-$ns duplex-link $n1 $n2 100Mb 5ms DropTail
+$ns duplex-link $n1 $n2 100Mb [expr $randomDelay0]ms DropTail
 $ns duplex-link $n2 $n3 0.1Mb 1ms DropTail
 $ns duplex-link $n3 $n4 100Mb 5ms DropTail
-$ns duplex-link $n3 $n5 100Mb 5ms DropTail
+$ns duplex-link $n3 $n5 100Mb [expr $randomDelay1]ms DropTail
 
 #Set Queue Size of link (n2-n3) to 10
 $ns queue-limit $n2 $n3 10
