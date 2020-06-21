@@ -20,12 +20,27 @@ $ns namtrace-all $nf
 
 #Define a 'finish' procedure
 proc finish {} {
-    global ns nf cwnd_outfile f
+    global ns nf cwnd_outfile f tcp0 tcp1
+
+
+    set lastACK0 [$tcp0 set ack_]
+    set lastSEQ0 [$tcp0 set maxseq_]
+    puts stdout "final ack0: $lastACK0, final seq num0: $lastSEQ0"
+
+    # since the bottleneck for both of the flows is 100 kbps that means (100 / 8) packet/s so 10000/8 = 1250 packets have been sent
+
+    set lastACK1 [$tcp1 set ack_]
+    set lastSEQ1 [$tcp1 set maxseq_]
+    puts stdout "final ack1: $lastACK1, final seq num1: $lastSEQ1"
+
+    
     $ns flush-trace
     #Close the NAM trace file
     close $nf
     close $cwnd_outfile
     close $f
+
+
     #Execute NAM on the trace file
     # exec nam out.nam &
     exit 0
