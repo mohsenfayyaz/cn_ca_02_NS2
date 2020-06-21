@@ -14,19 +14,19 @@ $ns color 2 Red
 #Open the NAM trace file
 set nf [open out.nam w]
 set cwnd_outfile [open cwnd.out w]
-set drop_outfile [open drop.out w]
+# set drop_outfile [open drop.out w]
 set f [open basic1.tr w]
 $ns namtrace-all $nf
 
 
 #Define a 'finish' procedure
 proc finish {} {
-    global ns nf cwnd_outfile drop_outfile f
+    global ns nf cwnd_outfile f
     $ns flush-trace
     #Close the NAM trace file
     close $nf
     close $cwnd_outfile
-    close $drop_outfile
+    # close $drop_outfile
     close $f
     #Execute NAM on the trace file
     # exec nam out.nam &
@@ -52,24 +52,19 @@ proc cwndPlotWindow {tcp0 tcp1 outfile} {
     $ns at [expr $now+0.1] "cwndPlotWindow $tcp0 $tcp1 $outfile"
 }
 
-proc packetDropWindow {n2 n3 outfile} {
-    global ns
+# proc packetDropWindow {n2 n3 outfile} {
+#     global ns
 
-    set now [$ns now]
-    set qq [$ns monitor-queue $n2 $n3 [open queue.tmp w] 0.05]
-    set bdrop [$qq set bdrops_]  
+#     set now [$ns now]
+#     set qq [$ns monitor-queue $n2 $n3 [open queue.tmp w] 0.05]
+#     set bdrop [$qq set bdrops_]  
 
-#  Print TIME CWND   for  gnuplot to plot progressing on CWND  
-    puts  $outfile "$now $bdrop" 
+# #  Print TIME CWND   for  gnuplot to plot progressing on CWND  
+#     puts  $outfile "$now $bdrop" 
 
-    $ns at [expr $now+0.1] "packetDropWindow $n2 $n3 $outfile"
-}
+#     $ns at [expr $now+0.1] "packetDropWindow $n2 $n3 $outfile"
+# }
 
-#Create four nodes
-# set n0 [$ns node]
-# set n1 [$ns node]
-# set n2 [$ns node]
-# set n3 [$ns node]
 
 set n0 [$ns node]
 set n1 [$ns node]
@@ -79,10 +74,7 @@ set n4 [$ns node]
 set n5 [$ns node]
 
 
-#Create links between the nodes
-# $ns duplex-link $n0 $n2 2Mb 10ms DropTail
-# $ns duplex-link $n1 $n2 2Mb 10ms DropTail
-# $ns duplex-link $n2 $n3 1.7Mb 20ms DropTail
+
 set randomDelay0 [randomGenerator 5 25]
 set randomDelay1 [randomGenerator 5 25]
 puts "1->2 variable delay: $randomDelay0"
@@ -97,10 +89,6 @@ $ns duplex-link $n3 $n5 100Mb [expr $randomDelay1]ms DropTail
 $ns queue-limit $n2 $n3 10
 $ns queue-limit $n3 $n2 10
 
-
-
-
-$ns trace-queue $n2 $n3 $f
 
 
 
@@ -135,11 +123,6 @@ $ns attach-agent $n5 $sink5
 $ns connect $tcp0 $sink4
 $ns connect $tcp1 $sink5 
 
-#Setup a FTP over TCP connection
-# set ftp [new Application/FTP]
-# $ftp attach-agent $tcp
-# $ftp set type_ FTP
-
 
 set cbr1 [new Application/Traffic/CBR]
 $cbr1 attach-agent $tcp0
@@ -155,28 +138,18 @@ $cbr2 set packet_size_ 1000
 $cbr2 set rate_ 1mb
 
 
-#Setup a CBR over UDP connection
-# set cbr [new Application/Traffic/CBR]
-# $cbr attach-agent $udp
-# $cbr set type_ CBR
-# $cbr set packet_size_ 1000
-# $cbr set rate_ 1mb
-# $cbr set random_ false
-
-#Schedule events for the CBR and FTP agents
+#Schedule events for the CBR agents
 $ns at 0.1 "$cbr1 start"
 $ns at 0.1 "$cbr2 start"
-$ns at 4.0 "$cbr1 stop"
-$ns at 4.0 "$cbr2 stop"
+$ns at 100.0 "$cbr1 stop"
+$ns at 100.0 "$cbr2 stop"
 
 $ns  at  0.0  "cwndPlotWindow $tcp0 $tcp1 $cwnd_outfile" 
-$ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
+# $ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
 
-# #Detach tcp and sink agents (not really necessary)
-# $ns at 4.5 "$ns detach-agent $n0 $tcp ; $ns detach-agent $n3 $sink"
 
 #Call the finish procedure after 5 seconds of simulation time
-$ns at 5.0 "finish"
+$ns at 101.0 "finish"
 
 #Print CBR packet size and interval
 # puts "CBR packet size = [$cbr set packet_size_]"
