@@ -14,8 +14,7 @@ $ns color 2 Red
 #Open the NAM trace file
 set nf [open out.nam w]
 set cwnd_outfile [open cwnd.out w]
-# set drop_outfile [open drop.out w]
-set f [open basic1.tr w]
+set f [open trace.tr w]
 $ns namtrace-all $nf
 
 
@@ -26,7 +25,6 @@ proc finish {} {
     #Close the NAM trace file
     close $nf
     close $cwnd_outfile
-    # close $drop_outfile
     close $f
     #Execute NAM on the trace file
     # exec nam out.nam &
@@ -106,11 +104,19 @@ $ns duplex-link-op $n2 $n3 queuePos 0.5
 #Setup a TCP connection
 set tcp0 [new Agent/TCP/Reno]
 $tcp0 set fid_ 1
+$tcp0 set packetSize_ 960
 $tcp0 set ttl_ 64
 $ns attach-agent $n0 $tcp0
 
+$tcp0 attach $f
+$tcp0 tracevar cwnd_
+# $tcp0 tracevar ssthresh_
+$tcp0 tracevar ack_
+# $tcp0 tracevar maxseq_
+
 set tcp1 [new Agent/TCP/Reno]
 $tcp1 set fid_ 2
+$tcp1 set packetSize_ 960
 $tcp1 set ttl_ 64
 $ns attach-agent $n1 $tcp1
 
@@ -127,14 +133,12 @@ $ns connect $tcp1 $sink5
 set cbr1 [new Application/Traffic/CBR]
 $cbr1 attach-agent $tcp0
 $cbr1 set type_ CBR
-$cbr1 set packet_size_ 1000
 $cbr1 set rate_ 1mb
 
 
 set cbr2 [new Application/Traffic/CBR]
 $cbr2 attach-agent $tcp1
 $cbr2 set type_ CBR
-$cbr2 set packet_size_ 1000
 $cbr2 set rate_ 1mb
 
 
