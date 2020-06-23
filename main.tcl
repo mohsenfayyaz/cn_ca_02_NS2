@@ -99,10 +99,14 @@ $ns duplex-link $n3 $n4 100Mb 5ms DropTail
 $ns duplex-link $n3 $n5 100Mb [expr $randomDelay1]ms DropTail
 
 #Set Queue Size of link (n2-n3) to 10
+#Set all output links of routers queue limit to 10
 $ns queue-limit $n2 $n3 10
+$ns queue-limit $n2 $n0 10
+$ns queue-limit $n2 $n1 10
+
 $ns queue-limit $n3 $n2 10
-
-
+$ns queue-limit $n3 $n4 10
+$ns queue-limit $n3 $n5 10
 
 
 #Give node position (for NAM)
