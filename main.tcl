@@ -75,7 +75,7 @@ proc cwndPlotWindow {tcp0 tcp1 outfile} {
     puts  $outfile  "$now $cwnd0 $cwnd1"
     
 
-    $ns at [expr $now+0.1] "cwndPlotWindow $tcp0 $tcp1 $outfile"
+    $ns at [expr $now+1] "cwndPlotWindow $tcp0 $tcp1 $outfile"
 }
 
 # proc packetDropWindow {n2 n3 outfile} {
@@ -143,7 +143,7 @@ $ns attach-agent $n0 $tcp0
 
 # Let's trace some variables
 $tcp0 attach $tracefile
-$tcp0 tracevar cwnd_
+$tcp0 tracevar cwnd0_
 # $tcp0 tracevar ssthresh_
 $tcp0 tracevar ack_
 # $tcp0 tracevar maxseq_
@@ -166,29 +166,32 @@ $ns connect $tcp1 $sink5
 
 
 set cbr1 [new Application/Traffic/CBR]
+# set cbr1 [new Application/FTP]
 $cbr1 attach-agent $tcp0
 $cbr1 set type_ CBR
 $cbr1 set rate_ 1mb
 
 
 set cbr2 [new Application/Traffic/CBR]
+# set cbr2 [new Application/FTP]
 $cbr2 attach-agent $tcp1
 $cbr2 set type_ CBR
 $cbr2 set rate_ 1mb
 
 
+set simulation_duration 1000.0
 #Schedule events for the CBR agents
 $ns at 0.0 "$cbr1 start"
 $ns at 0.0 "$cbr2 start"
-$ns at 1000.0 "$cbr1 stop"
-$ns at 1000.0 "$cbr2 stop"
+$ns at $simulation_duration "$cbr1 stop"
+$ns at $simulation_duration "$cbr2 stop"
 
 $ns  at  0.0  "cwndPlotWindow $tcp0 $tcp1 $cwnd_outfile" 
 # $ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
 
 
 #Call the finish procedure after 5 seconds of simulation time
-$ns at 1000.0 "finish"
+$ns at $simulation_duration "finish"
 
 #Print CBR packet size and interval
 # puts "CBR packet size = [$cbr set packet_size_]"
