@@ -3,6 +3,19 @@
 # https://www.absingh.com/ns2/
 # https://ns2blogger.blogspot.com/p/the-file-written-by-application-or-by.html
 
+if { $argc != 1 } {
+    puts "The main.tcl script requires one TCP algorithm to be inputed. \n For example, 'ns main.tcl newReno' \n Please try again."
+    return 0;
+} else {
+    set TCP_ALGORITHM [lindex $argv 0]
+
+    puts -nonewline "You chose "
+    if {[string equal $TCP_ALGORITHM TCP]} {
+        puts "TCP (Tahoe)"
+    } else {
+        puts $TCP_ALGORITHM
+    }
+}
 
 #Create a simulator object
 set ns [new Simulator]
@@ -12,15 +25,15 @@ $ns color 1 Blue
 $ns color 2 Red
 
 #Open the NAM trace file
-set nf [open out.nam w]
-set cwnd_outfile [open cwnd.out w]
-set f [open trace.tr w]
+set nf [open output/out.nam w]
+set cwnd_outfile [open output/cwnd.out w]
+set tracefile [open output/trace.tr w]
 $ns namtrace-all $nf
 
 
 #Define a 'finish' procedure
 proc finish {} {
-    global ns nf cwnd_outfile f tcp0 tcp1
+    global ns nf cwnd_outfile tracefile tcp0 tcp1
 
 
     set lastACK0 [$tcp0 set ack_]
@@ -38,7 +51,7 @@ proc finish {} {
     #Close the NAM trace file
     close $nf
     close $cwnd_outfile
-    close $f
+    close $tracefile
 
 
     #Execute NAM on the trace file
@@ -99,10 +112,14 @@ $ns duplex-link $n3 $n4 100Mb 5ms DropTail
 $ns duplex-link $n3 $n5 100Mb [expr $randomDelay1]ms DropTail
 
 #Set Queue Size of link (n2-n3) to 10
+#Set all output links of routers queue limit to 10
 $ns queue-limit $n2 $n3 10
+$ns queue-limit $n2 $n0 10
+$ns queue-limit $n2 $n1 10
+
 $ns queue-limit $n3 $n2 10
-
-
+$ns queue-limit $n3 $n4 10
+$ns queue-limit $n3 $n5 10
 
 
 #Give node position (for NAM)
@@ -117,21 +134,24 @@ $ns duplex-link-op $n3 $n5 orient right-down
 $ns duplex-link-op $n2 $n3 queuePos 0.5
 
 #Setup a TCP connection
-set tcp0 [new Agent/TCP/Reno]
+set tcp0 [new Agent/$TCP_ALGORITHM]
 $tcp0 set fid_ 1
-$tcp0 set packetSize_ 960
+$tcp0 set packetSize_ 1000
 $tcp0 set ttl_ 64
 $ns attach-agent $n0 $tcp0
 
-$tcp0 attach $f
+
+# Let's trace some variables
+$tcp0 attach $tracefile
 $tcp0 tracevar cwnd_
 # $tcp0 tracevar ssthresh_
 $tcp0 tracevar ack_
 # $tcp0 tracevar maxseq_
 
-set tcp1 [new Agent/TCP/Reno]
+set tcp1 [new Agent/$TCP_ALGORITHM]
+
 $tcp1 set fid_ 2
-$tcp1 set packetSize_ 960
+$tcp1 set packetSize_ 1000
 $tcp1 set ttl_ 64
 $ns attach-agent $n1 $tcp1
 
@@ -142,7 +162,7 @@ set sink5 [new Agent/TCPSink]
 $ns attach-agent $n5 $sink5
 
 $ns connect $tcp0 $sink4
-$ns connect $tcp1 $sink5 
+$ns connect $tcp1 $sink5
 
 
 set cbr1 [new Application/Traffic/CBR]
@@ -158,17 +178,17 @@ $cbr2 set rate_ 1mb
 
 
 #Schedule events for the CBR agents
-$ns at 0.1 "$cbr1 start"
-$ns at 0.1 "$cbr2 start"
-$ns at 100.0 "$cbr1 stop"
-$ns at 100.0 "$cbr2 stop"
+$ns at 0.0 "$cbr1 start"
+$ns at 0.0 "$cbr2 start"
+$ns at 1000.0 "$cbr1 stop"
+$ns at 1000.0 "$cbr2 stop"
 
 $ns  at  0.0  "cwndPlotWindow $tcp0 $tcp1 $cwnd_outfile" 
 # $ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
 
 
 #Call the finish procedure after 5 seconds of simulation time
-$ns at 101.0 "finish"
+$ns at 1000.0 "finish"
 
 #Print CBR packet size and interval
 # puts "CBR packet size = [$cbr set packet_size_]"
