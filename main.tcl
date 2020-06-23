@@ -12,9 +12,9 @@ $ns color 1 Blue
 $ns color 2 Red
 
 #Open the NAM trace file
-set nf [open out.nam w]
-set cwnd_outfile [open cwnd.out w]
-set f [open trace.tr w]
+set nf [open output/out.nam w]
+set cwnd_outfile [open output/cwnd.out w]
+set f [open output/trace.tr w]
 $ns namtrace-all $nf
 
 
@@ -142,7 +142,7 @@ set sink5 [new Agent/TCPSink]
 $ns attach-agent $n5 $sink5
 
 $ns connect $tcp0 $sink4
-$ns connect $tcp1 $sink5 
+$ns connect $tcp1 $sink5
 
 
 set cbr1 [new Application/Traffic/CBR]
