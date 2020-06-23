@@ -3,6 +3,14 @@
 # https://www.absingh.com/ns2/
 # https://ns2blogger.blogspot.com/p/the-file-written-by-application-or-by.html
 
+if { $argc != 1 } {
+    puts "The main.tcl script requires one TCP algorithm to be inputed. \n For example, 'ns main.tcl newReno' \n Please try again."
+    return 0;
+} else {
+    puts -nonewline "You chose TCP "
+    puts [lindex $argv 0]
+    set TCP_ALGORITHM [lindex $argv 0]
+}
 
 #Create a simulator object
 set ns [new Simulator]
@@ -121,7 +129,11 @@ $ns duplex-link-op $n3 $n5 orient right-down
 $ns duplex-link-op $n2 $n3 queuePos 0.5
 
 #Setup a TCP connection
-set tcp0 [new Agent/TCP/Reno]
+if{$TCP_ALGORITHM == "Tahoe"}{
+    set tcp0 [new Agent/TCP]
+}else{
+    set tcp0 [new Agent/TCP/$TCP_ALGORITHM]
+}
 $tcp0 set fid_ 1
 $tcp0 set packetSize_ 1000
 $tcp0 set ttl_ 64
@@ -133,7 +145,11 @@ $tcp0 tracevar cwnd_
 $tcp0 tracevar ack_
 # $tcp0 tracevar maxseq_
 
-set tcp1 [new Agent/TCP/Reno]
+if{$TCP_ALGORITHM == "Tahoe"}{
+    set tcp1 [new Agent/TCP]
+}else{
+    set tcp1 [new Agent/TCP/$TCP_ALGORITHM]
+}
 $tcp1 set fid_ 2
 $tcp1 set packetSize_ 1000
 $tcp1 set ttl_ 64
