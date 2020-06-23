@@ -7,9 +7,14 @@ if { $argc != 1 } {
     puts "The main.tcl script requires one TCP algorithm to be inputed. \n For example, 'ns main.tcl newReno' \n Please try again."
     return 0;
 } else {
-    puts -nonewline "You chose TCP "
-    puts [lindex $argv 0]
     set TCP_ALGORITHM [lindex $argv 0]
+
+    puts -nonewline "You chose "
+    if {[string equal $TCP_ALGORITHM TCP]} {
+        puts "TCP (Tahoe)"
+    } else {
+        puts $TCP_ALGORITHM
+    }
 }
 
 #Create a simulator object
@@ -22,13 +27,13 @@ $ns color 2 Red
 #Open the NAM trace file
 set nf [open output/out.nam w]
 set cwnd_outfile [open output/cwnd.out w]
-set f [open output/trace.tr w]
+set tracefile [open output/trace.tr w]
 $ns namtrace-all $nf
 
 
 #Define a 'finish' procedure
 proc finish {} {
-    global ns nf cwnd_outfile f tcp0 tcp1
+    global ns nf cwnd_outfile tracefile tcp0 tcp1
 
 
     set lastACK0 [$tcp0 set ack_]
@@ -46,7 +51,7 @@ proc finish {} {
     #Close the NAM trace file
     close $nf
     close $cwnd_outfile
-    close $f
+    close $tracefile
 
 
     #Execute NAM on the trace file
@@ -129,27 +134,22 @@ $ns duplex-link-op $n3 $n5 orient right-down
 $ns duplex-link-op $n2 $n3 queuePos 0.5
 
 #Setup a TCP connection
-if{$TCP_ALGORITHM == "Tahoe"}{
-    set tcp0 [new Agent/TCP]
-}else{
-    set tcp0 [new Agent/TCP/$TCP_ALGORITHM]
-}
+set tcp0 [new Agent/$TCP_ALGORITHM]
 $tcp0 set fid_ 1
 $tcp0 set packetSize_ 1000
 $tcp0 set ttl_ 64
 $ns attach-agent $n0 $tcp0
 
-$tcp0 attach $f
+
+# Let's trace some variables
+$tcp0 attach $tracefile
 $tcp0 tracevar cwnd_
 # $tcp0 tracevar ssthresh_
 $tcp0 tracevar ack_
 # $tcp0 tracevar maxseq_
 
-if{$TCP_ALGORITHM == "Tahoe"}{
-    set tcp1 [new Agent/TCP]
-}else{
-    set tcp1 [new Agent/TCP/$TCP_ALGORITHM]
-}
+set tcp1 [new Agent/$TCP_ALGORITHM]
+
 $tcp1 set fid_ 2
 $tcp1 set packetSize_ 1000
 $tcp1 set ttl_ 64
