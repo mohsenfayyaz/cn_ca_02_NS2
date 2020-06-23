@@ -119,7 +119,7 @@ $ns duplex-link-op $n2 $n3 queuePos 0.5
 #Setup a TCP connection
 set tcp0 [new Agent/TCP/Reno]
 $tcp0 set fid_ 1
-$tcp0 set packetSize_ 960
+$tcp0 set packetSize_ 1000
 $tcp0 set ttl_ 64
 $ns attach-agent $n0 $tcp0
 
@@ -131,7 +131,7 @@ $tcp0 tracevar ack_
 
 set tcp1 [new Agent/TCP/Reno]
 $tcp1 set fid_ 2
-$tcp1 set packetSize_ 960
+$tcp1 set packetSize_ 1000
 $tcp1 set ttl_ 64
 $ns attach-agent $n1 $tcp1
 
@@ -158,17 +158,17 @@ $cbr2 set rate_ 1mb
 
 
 #Schedule events for the CBR agents
-$ns at 0.1 "$cbr1 start"
-$ns at 0.1 "$cbr2 start"
-$ns at 100.0 "$cbr1 stop"
-$ns at 100.0 "$cbr2 stop"
+$ns at 0.0 "$cbr1 start"
+$ns at 0.0 "$cbr2 start"
+$ns at 1000.0 "$cbr1 stop"
+$ns at 1000.0 "$cbr2 stop"
 
 $ns  at  0.0  "cwndPlotWindow $tcp0 $tcp1 $cwnd_outfile" 
 # $ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
 
 
 #Call the finish procedure after 5 seconds of simulation time
-$ns at 101.0 "finish"
+$ns at 1000.0 "finish"
 
 #Print CBR packet size and interval
 # puts "CBR packet size = [$cbr set packet_size_]"
