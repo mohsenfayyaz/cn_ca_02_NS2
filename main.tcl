@@ -89,13 +89,19 @@ proc plotRtt {tcp0 tcp1 outfile} {
      $ns at [expr $now+1] "plotRtt $tcp0 $tcp1 $outfile"
 }
 
+set oldAck0 -1
+set oldAck1 -1
 proc plotGoodPut {tcp0 tcp1 outfile} {
      global ns
+     global oldAck0
+     global oldAck1
      set now [$ns now]
      set ack0 [$tcp0 set ack_]
      set ack1 [$tcp1 set ack_]
     #  (100Kb/s bottlneck) / (1000*8 packet size) = 12.5packet/s = theoretical bandwidth 
-     puts  $outfile "$now [expr ($ack0+1)/($now*12.5)] [expr ($ack1+1)/($now*12.5)]"
+     puts  $outfile "$now [expr ($ack0-$oldAck0)*8] [expr ($ack1-$oldAck1)*8]"
+     set oldAck0 $ack0
+     set oldAck1 $ack1
      $ns at [expr $now+1] "plotGoodPut $tcp0 $tcp1 $outfile"
 }
 
@@ -208,7 +214,7 @@ $ns at $simulation_duration "$cbr1 stop"
 $ns at $simulation_duration "$cbr2 stop"
 
 $ns  at  0.0  "cwndPlotWindow $tcp0 $tcp1 $cwnd_outfile" 
-$ns  at  0.01  "plotGoodPut $tcp0 $tcp1 $gp_outfile"
+$ns  at  0.0  "plotGoodPut $tcp0 $tcp1 $gp_outfile"
 $ns  at  0.0  "plotRtt $tcp0 $tcp1 $rtt_outfile" 
 # $ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
 
