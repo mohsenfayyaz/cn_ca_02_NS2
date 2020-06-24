@@ -94,6 +94,7 @@ proc plotGoodPut {tcp0 tcp1 outfile} {
      set now [$ns now]
      set ack0 [$tcp0 set ack_]
      set ack1 [$tcp1 set ack_]
+    #  (100Kb/s bottlneck) / (1000*8 packet size) = 12.5packet/s = theoretical bandwidth 
      puts  $outfile "$now [expr ($ack0+1)/($now*12.5)] [expr ($ack1+1)/($now*12.5)]"
      $ns at [expr $now+1] "plotGoodPut $tcp0 $tcp1 $outfile"
 }
