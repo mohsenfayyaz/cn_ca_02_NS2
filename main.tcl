@@ -87,6 +87,15 @@ proc plotRtt {tcp0 tcp1 outfile} {
      $ns at [expr $now+1] "plotRtt $tcp0 $tcp1 $outfile"
 }
 
+proc plotGoodPut {tcp0 tcp1 outfile} {
+     global ns
+     set now [$ns now]
+     set ack0 [$tcp0 set ack_]
+     set ack1 [$tcp1 set ack_]
+     puts  $outfile "$now [expr ($ack0+1)/($now*12.5)] [expr ($ack1+1)/($now*12.5)]"
+     $ns at [expr $now+1] "plotGoodPut $tcp0 $tcp1 $outfile"
+}
+
 # proc packetDropWindow {n2 n3 outfile} {
 #     global ns
 
