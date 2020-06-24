@@ -31,6 +31,7 @@ set gp_outfile [open output/gp.out w]
 set rtt_outfile [open output/rtt.out w]
 set tracefile [open output/trace.tr w]
 $ns namtrace-all $nf
+$ns trace-all $tracefile
 
 
 #Define a 'finish' procedure
@@ -160,13 +161,6 @@ $tcp0 set packetSize_ 1000
 $tcp0 set ttl_ 64
 $ns attach-agent $n0 $tcp0
 
-
-# Let's trace some variables
-$tcp0 attach $tracefile
-$tcp0 tracevar cwnd0_
-# $tcp0 tracevar ssthresh_
-$tcp0 tracevar ack_
-# $tcp0 tracevar maxseq_
 
 set tcp1 [new Agent/$TCP_ALGORITHM]
 
