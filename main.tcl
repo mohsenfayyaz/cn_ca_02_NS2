@@ -27,6 +27,7 @@ $ns color 2 Red
 #Open the NAM trace file
 set nf [open output/out.nam w]
 set cwnd_outfile [open output/cwnd.out w]
+set gp_outfile [open output/gp.out w]
 set tracefile [open output/trace.tr w]
 $ns namtrace-all $nf
 
@@ -197,7 +198,7 @@ $cbr2 set type_ CBR
 $cbr2 set rate_ 1mb
 
 
-set simulation_duration 100.0
+set simulation_duration 1000.0
 #Schedule events for the CBR agents
 $ns at 0.0 "$cbr1 start"
 $ns at 0.0 "$cbr2 start"
@@ -205,6 +206,7 @@ $ns at $simulation_duration "$cbr1 stop"
 $ns at $simulation_duration "$cbr2 stop"
 
 $ns  at  0.0  "cwndPlotWindow $tcp0 $tcp1 $cwnd_outfile" 
+$ns  at  0.01  "plotGoodPut $tcp0 $tcp1 $gp_outfile" 
 # $ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
 
 
