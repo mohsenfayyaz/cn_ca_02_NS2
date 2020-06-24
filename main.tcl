@@ -28,6 +28,7 @@ $ns color 2 Red
 set nf [open output/out.nam w]
 set cwnd_outfile [open output/cwnd.out w]
 set gp_outfile [open output/gp.out w]
+set rtt_outfile [open output/rtt.out w]
 set tracefile [open output/trace.tr w]
 $ns namtrace-all $nf
 
@@ -206,7 +207,8 @@ $ns at $simulation_duration "$cbr1 stop"
 $ns at $simulation_duration "$cbr2 stop"
 
 $ns  at  0.0  "cwndPlotWindow $tcp0 $tcp1 $cwnd_outfile" 
-$ns  at  0.01  "plotGoodPut $tcp0 $tcp1 $gp_outfile" 
+$ns  at  0.01  "plotGoodPut $tcp0 $tcp1 $gp_outfile"
+$ns  at  0.0  "plotRtt $tcp0 $tcp1 $rtt_outfile" 
 # $ns  at  0.0  "packetDropWindow $n2 $n3 $drop_outfile" 
 
 
