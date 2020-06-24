@@ -78,6 +78,15 @@ proc cwndPlotWindow {tcp0 tcp1 outfile} {
     $ns at [expr $now+1] "cwndPlotWindow $tcp0 $tcp1 $outfile"
 }
 
+proc plotRtt {tcp0 tcp1 outfile} {
+     global ns
+     set now [$ns now]
+     set rtt1 [$tcp0 set rtt_]
+     set rtt2 [$tcp1 set rtt_]
+     puts  $outfile  "$now $rtt1 $rtt2"
+     $ns at [expr $now+1] "plotRtt $tcp0 $tcp1 $outfile"
+}
+
 # proc packetDropWindow {n2 n3 outfile} {
 #     global ns
 
@@ -179,7 +188,7 @@ $cbr2 set type_ CBR
 $cbr2 set rate_ 1mb
 
 
-set simulation_duration 1000.0
+set simulation_duration 100.0
 #Schedule events for the CBR agents
 $ns at 0.0 "$cbr1 start"
 $ns at 0.0 "$cbr2 start"
