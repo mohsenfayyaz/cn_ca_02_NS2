@@ -58,7 +58,7 @@ proc finish {} {
 
 
     #Execute NAM on the trace file
-    # exec nam out.nam &
+    # exec nam output/out.nam &
     exit 0
 }
 
@@ -186,15 +186,15 @@ $ns connect $tcp0 $sink4
 $ns connect $tcp1 $sink5
 
 
-set cbr1 [new Application/Traffic/CBR]
-# set cbr1 [new Application/FTP]
+# set cbr1 [new Application/Traffic/CBR]
+set cbr1 [new Application/FTP]
 $cbr1 attach-agent $tcp0
 $cbr1 set type_ CBR
 $cbr1 set rate_ 1mb
 
 
-set cbr2 [new Application/Traffic/CBR]
-# set cbr2 [new Application/FTP]
+# set cbr2 [new Application/Traffic/CBR]
+set cbr2 [new Application/FTP]
 $cbr2 attach-agent $tcp1
 $cbr2 set type_ CBR
 $cbr2 set rate_ 1mb
